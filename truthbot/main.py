@@ -1,16 +1,23 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
+from typing import List, Dict
+import uvicorn
+import random
 
+# Initialize FastAPI app
 app = FastAPI()
 
+# Set up templates directory
 templates = Jinja2Templates(directory="templates")
 
+# Root route serving the HTML form
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# Define your other routes or functions (like check_with_gov_sources)
+# Function to check with government sources
 def check_with_gov_sources(question: str) -> Dict:
     sources = [
         "whitehouse.gov",
@@ -36,6 +43,7 @@ def check_with_gov_sources(question: str) -> Dict:
         "status": "Based on .gov and legal records only"
     }
 
+# Function to check recent media claims
 def check_recent_media_claims() -> List[Dict]:
     claims = [
         {
@@ -65,6 +73,7 @@ def check_recent_media_claims() -> List[Dict]:
     ]
     return claims[:5]
 
+# Function to perform legal-specific check
 def legal_check_specific(question: str) -> Dict:
     legal_citations = [
         "U.S. Constitution Article II, Section 3",
@@ -86,9 +95,11 @@ def legal_check_specific(question: str) -> Dict:
         "sources_checked": sources_checked
     }
 
+# Data model for incoming question
 class QuestionRequest(BaseModel):
     question: str
 
+# Route to process general questions
 @app.post("/ask")
 async def ask_question(request: QuestionRequest):
     result = check_with_gov_sources(request.question)
@@ -98,6 +109,7 @@ async def ask_question(request: QuestionRequest):
         "note": "Strictly checked against public .gov and legal sources. No media or opinions used."
     }
 
+# Route to check recent media claims
 @app.get("/check-media")
 async def check_media():
     result = check_recent_media_claims()
@@ -106,6 +118,7 @@ async def check_media():
         "note": "Media claims cross-checked with public .gov and legal sources only."
     }
 
+# Route to perform legal checks
 @app.post("/legal-check")
 async def legal_check(request: QuestionRequest):
     result = legal_check_specific(request.question)
@@ -115,5 +128,6 @@ async def legal_check(request: QuestionRequest):
         "note": "Legal references only from .gov and U.S. legal sources."
     }
 
+# Run the application
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
