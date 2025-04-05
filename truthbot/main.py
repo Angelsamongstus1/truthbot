@@ -1,15 +1,14 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import List, Dict
-import uvicorn
-import random
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
-# Only one FastAPI instance
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the Truthbot API!"}
+templates = Jinja2Templates(directory="templates")
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 # Define your other routes or functions (like check_with_gov_sources)
 def check_with_gov_sources(question: str) -> Dict:
