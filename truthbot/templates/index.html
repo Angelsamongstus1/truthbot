@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Truthbot API</title>
+</head>
+<body>
+    <h1>Welcome to the Truthbot API</h1>
+
+    <form id="questionForm">
+        <label for="question">Enter your question:</label><br><br>
+        <input type="text" id="question" name="question" required><br><br>
+        <input type="submit" value="Ask Question">
+    </form>
+
+    <h3>Results:</h3>
+    <pre id="response"></pre>
+
+    <script>
+        const form = document.getElementById("questionForm");
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const question = document.getElementById("question").value;
+            const response = await fetch("/ask", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ question }),
+            });
+            const result = await response.json();
+            document.getElementById("response").textContent = JSON.stringify(result, null, 2);
+        };
+    </script>
+</body>
+</html>
