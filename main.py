@@ -1,18 +1,17 @@
-
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the Truth Checker API!"}
-
-
-
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List, Dict
 import uvicorn
 import random
 
+# Only one FastAPI instance
 app = FastAPI()
 
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Truthbot API!"}
+
+# Define your other routes or functions (like check_with_gov_sources)
 def check_with_gov_sources(question: str) -> Dict:
     sources = [
         "whitehouse.gov",
