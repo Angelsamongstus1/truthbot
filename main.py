@@ -1,3 +1,10 @@
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Truth Checker API!"}
+
+
+
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from typing import List, Dict
